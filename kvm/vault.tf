@@ -11,8 +11,8 @@ resource "vault_mount" "kvLab" {
   }
 }
 
- # example populate a value
- resource "vault_generic_secret" "secret" {
+# initial populate vault from files
+resource "vault_generic_secret" "secret" {
   path      = "${vault_mount.kvLab.path}/config"
   data_json = jsonencode(
     {
@@ -26,6 +26,8 @@ resource "vault_mount" "kvLab" {
 data "vault_generic_secret" "secret" {
   path = "${vault_mount.kvLab.path}/config"
 }
+
+# see resource_local_shared.tf for calling vault values
 
 # TODO: above requires two applys on first setup after destroy, fix this
 
