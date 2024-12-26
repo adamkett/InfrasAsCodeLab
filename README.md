@@ -4,8 +4,8 @@ Some quick sample files from terraform & ansible home lab.
 
 ## Examples
 
-- [kvm/](kvm/)
 - [docker/](docker/)
+- [kvm/](kvm/)
 
 ## Assumptions
 
