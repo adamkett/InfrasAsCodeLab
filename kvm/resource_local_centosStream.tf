@@ -7,7 +7,7 @@ resource "libvirt_volume" "centosStream-qcow2" {
   pool = "default"
   #source =  https://cloud.centos.org/centos/10-stream/x86_64/images/CentOS-Stream-GenericCloud-x86_64-10-latest.x86_64.qcow2
   source = "/storage/isos/CentOS-Stream-GenericCloud-x86_64-10-latest.x86_64.qcow2"
-  format = "qcow2"
+  format = "qcow2" 
 }
 
 #######################################################################
@@ -18,8 +18,14 @@ resource "libvirt_domain" "centosStream" {
   memory = "2048"
   vcpu   = 2
 
+  cpu {
+    mode = "host-passthrough"
+    #mode = "host-model"
+  }
+
   network_interface {
     network_name = "default"
+    wait_for_lease = true
   }
 
   disk {
@@ -29,9 +35,15 @@ resource "libvirt_domain" "centosStream" {
   cloudinit = "${libvirt_cloudinit_disk.commoninit.id}"
 
   console {
-    type = "pty"
-    target_type = "serial"
+    type        = "pty"
     target_port = "0"
+    target_type = "serial"
+  }
+
+  console {
+    type        = "pty"
+    target_type = "virtio"
+    target_port = "1"
   }
 
   graphics {
@@ -39,4 +51,9 @@ resource "libvirt_domain" "centosStream" {
     listen_type = "address"
     autoport = true
   }
+
 }
+
+output "ip_centosStream" { value = libvirt_domain.centosStream.network_interface[0].addresses[0] }
+
+# sudo virsh console centosStream

@@ -80,6 +80,18 @@ Logs in ok
 --snip--
 > kvmadam@ubuntu:~$
 
+# ansible notes
+
+Set up optimus as control node
+[adam@optimus ~]$ sudo dnf install vim-ansible.noarch ansible.noarch
+
+TODO: KVM manage new vms
+-- https://docs.ansible.com/ansible/latest/getting_started/get_started_inventory.html
+-- get output from terraform for IP of new created VM
+-- apply some configuration to new created KVM VMs
+-- once all working merge git branch to main and push 
+-- maybe need some terraform logic to pick IPs 
+
 
 ## TODOs
 [X] Optimus KVM create VM with terraform \
@@ -87,7 +99,7 @@ Logs in ok
 [X] centos7 +x cloud config \
 [X] cloud config to use vault secrets \
 [X] Change VM to UBUNTU + Cloud/kickstart Config \
-[/] Second VM to RHEL/or clone + Cloud/kickstart Config \
+[X] Second VM to RHEL/or clone + Cloud/kickstart Config \
 [ ] Fix terraform destroy and 2x apply for vault \
 [X] close down centos old \
 [ ] Mycroft KVM create VM \
