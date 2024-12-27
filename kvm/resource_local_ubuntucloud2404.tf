@@ -8,6 +8,7 @@ resource "libvirt_volume" "ubuntucloud2404-img" {
   #source = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
   source = "/storage/isos/noble-server-cloudimg-amd64.img"
   format = "qcow2"
+  depends_on = [ libvirt_cloudinit_disk.commoninit ]
 }
 
 #######################################################################
@@ -20,6 +21,7 @@ resource "libvirt_domain" "ubuntucloud2404" {
 
   network_interface {
     network_name = "default"
+    wait_for_lease = true
   }
 
   disk {
@@ -39,7 +41,18 @@ resource "libvirt_domain" "ubuntucloud2404" {
     listen_type = "address"
     autoport = true
   }
+
+  depends_on = [ libvirt_volume.ubuntucloud2404-img ]
 }
 
-output "ip_ubuntucloud2404" { value = libvirt_domain.ubuntucloud2404.network_interface[0].addresses[0] }
+# work around for slow boot kvm vms getting ups
+resource "time_sleep" "ubuntu_wait_x_seconds" {
+  depends_on = [ libvirt_domain.ubuntucloud2404  ]
+  create_duration = "5s"
+}
+
+output "ip_ubuntucloud2404" {
+  value = libvirt_domain.ubuntucloud2404.network_interface[0].addresses[0]
+  depends_on = [ time_sleep.ubuntu_wait_x_seconds ]
+}
 

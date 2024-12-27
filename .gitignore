@@ -5,3 +5,6 @@ terraform.tfstate.backup
 *.todo
 .vscode
 ENV.*
+inventory.ini
+*.key
+*.log

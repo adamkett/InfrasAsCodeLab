@@ -8,6 +8,8 @@ resource "libvirt_volume" "centosStream-qcow2" {
   #source =  https://cloud.centos.org/centos/10-stream/x86_64/images/CentOS-Stream-GenericCloud-x86_64-10-latest.x86_64.qcow2
   source = "/storage/isos/CentOS-Stream-GenericCloud-x86_64-10-latest.x86_64.qcow2"
   format = "qcow2" 
+  
+  depends_on = [ libvirt_cloudinit_disk.commoninit ]
 }
 
 #######################################################################
@@ -51,9 +53,18 @@ resource "libvirt_domain" "centosStream" {
     listen_type = "address"
     autoport = true
   }
-
+  
+  depends_on = [ libvirt_volume.centosStream-qcow2 ]
 }
 
-output "ip_centosStream" { value = libvirt_domain.centosStream.network_interface[0].addresses[0] }
+# work around for slow boot kvm vms getting ups
+resource "time_sleep" "centos_wait_x_seconds" {
+  depends_on = [ libvirt_domain.centosStream  ]
+  create_duration = "5s"
+}
+
+output "ip_centosStream" {
+  value = libvirt_domain.centosStream.network_interface[0].addresses[0]
+}
 
 # sudo virsh console centosStream

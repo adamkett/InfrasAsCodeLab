@@ -6,6 +6,9 @@ terraform {
     libvirt = {
       source = "dmacvicar/libvirt"
     }
+    ansible = {
+      source  = "ansible/ansible"
+    }
   }
 }
 
