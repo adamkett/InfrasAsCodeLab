@@ -1,0 +1,12 @@
+# ansible-playbook -i inventory.yaml playbook.yaml
+- name: My first play
+  hosts: kmvlabhosts
+  tasks:
+   - name: Ping my hosts
+     ansible.builtin.ping:
+
+   - name: Print message
+     ansible.builtin.debug:
+       msg: Hello world
+
+# TODO: install nginx
