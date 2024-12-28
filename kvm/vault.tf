@@ -1,5 +1,8 @@
 provider vault {
   address = "https://127.0.0.1:8200"
+  
+  skip_tls_verify = true  # do not do this in production
+                          # TODO: Change Cert to signed and trusted by lab server 
 }
 
 # Create the Secrets Engines "secretsKVM" type kv

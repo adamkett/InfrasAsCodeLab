@@ -8,3 +8,5 @@ ENV.*
 inventory.ini
 *.key
 *.log
+*.yaml
+*.yml

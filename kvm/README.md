@@ -100,7 +100,7 @@ TODO: KVM manage new vms
 [X] cloud config to use vault secrets \
 [X] Change VM to UBUNTU + Cloud/kickstart Config \
 [X] Second VM to RHEL/or clone + Cloud/kickstart Config \
-[ ] Fix terraform destroy and 2x apply for vault \
+[X] Fix terraform destroy and 2x apply for vault \
 [X] close down centos old \
 [ ] Mycroft KVM create VM \
 [ ] Mycroft KVM create Network separate \
