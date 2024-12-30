@@ -16,15 +16,13 @@ resource "libvirt_cloudinit_disk" "commoninit" {
   name = "commoninit.iso"
   pool = "default" # List storage pools using virsh pool-list
   user_data = "${data.template_file.user_data.rendered}"
-
   depends_on = [ data.vault_generic_secret.secret ]
 }
 
-# Pull private key from vault
+# Pull private key from vault - save to local key file
 resource "local_file" "ansible_labsshprivate_key" {
   filename = "labsshprivate.key"
   content  = "${data.vault_generic_secret.secret.data["kvmsshprivatekey"]}"
   file_permission = "0400"
-
   depends_on = [ data.vault_generic_secret.secret ]
 }
