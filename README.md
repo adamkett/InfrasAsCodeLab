@@ -5,6 +5,8 @@ Some quick sample files from terraform & ansible home lab.
 ## Examples
 Terraform apply vault first to populate values needed for other examples.
 
+Terraform code arranged under folders 
+
 - [vault/](vault/)
 - [kvm/](kvm/)
 - [docker/](docker/)
