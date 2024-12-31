@@ -30,4 +30,4 @@ Create KVM Virtual machines on mycroft
 
 ## Notes
 Other notes
-[NOTES](NOTES.md)
+[NOTES.md](NOTES.md)
