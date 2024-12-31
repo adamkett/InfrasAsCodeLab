@@ -2,6 +2,10 @@ Back to [KVM/README](README)
 
 ## others notes to tidy 
 
+Mycroft 
+  - terraform access for lab user using ssh keys
+  - usermod -aG kvm,libvirt,qemu adam
+
 Using libvirt
 - https://github.com/dmacvicar/terraform-provider-libvirt
 - https://github.com/dmacvicar/terraform-provider-libvirt/blob/main/examples/v0.13/multiple/main.tf
