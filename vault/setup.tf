@@ -1,13 +1,14 @@
 # Initial 1 time setup of Vault value for lab
 # source values from ENV* files as config
 #
-# ENV.awsaccesskey      needed
-# ENV.awssecretkey      needed
-# ENV.awsregion         needed
-# ENV.labuser           optional 
-# ENV.labpass           optional 
-# ENV.labsshpubkey      needed
-# ENV.labsshprivatekey  needed
+# ENV.awsaccesskey        needed
+# ENV.awssecretkey        needed
+# ENV.awsregion           optional
+# ENV.awsavailabilityzone optional
+# ENV.labuser             optional 
+# ENV.labpass             optional 
+# ENV.labsshpubkey        needed
+# ENV.labsshprivatekey    needed
 #
 # TODO: Auto generate SSH Key if none supplied 
 #
@@ -51,9 +52,10 @@ resource "vault_generic_secret" "secretsforaws" {
   path      = "${vault_mount.kvLab.path}/aws"
   data_json = jsonencode(
     {
-      awsregion = file("ENV.awsregion")
       awsaccesskey = file("ENV.awsaccesskey")
       awssecretkey = file("ENV.awssecretkey")
+      awsregion = fileexists("ENV.awsregion") ? file("ENV.awsregion") : "eu-west-2"
+      awsavailabilityzone = fileexists("ENV.awsavailabilityzone") ? file("ENV.awsavailabilityzone") : "eu-west-2a"
     }
   )
   depends_on = [ vault_mount.kvLab ]

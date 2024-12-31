@@ -71,3 +71,5 @@ resource "null_resource" "output_to_terraform_ansible_log" {
 
   depends_on = [local_file.ansible_inventory_ini]
 }  
+
+# TODO: update accept-new to also update old keys when using a previous IP in known hosts 
