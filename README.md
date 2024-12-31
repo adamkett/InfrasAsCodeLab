@@ -10,7 +10,7 @@ Terraform/Ansible examples arranged under folders
 
 - [vault/](vault/) - Setup vault secrets required for other examples
 - [kvm/](kvm/) - terraform setup VMs via KVM with Ansible
-- [docker/](docker/) - setup some contains with terraform
+- [docker/](docker/)
 - [aws/](aws/)
 
 Noting lab assumes vault has been 'terraform apply' first to populate values needed for other examples.
