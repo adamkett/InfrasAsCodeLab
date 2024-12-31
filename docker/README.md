@@ -22,5 +22,5 @@
 
 ## Notes
 Other notes
-[NOTES](NOTES)
+[NOTES.md](NOTES.md)
 
