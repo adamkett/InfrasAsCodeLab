@@ -47,7 +47,7 @@ resource "aws_network_interface" "nic1" {
 }
 
 # Look up latest AMI of Amazon Linux 
-data "aws_ami" "this" {
+data "aws_ami" "amazonlinux" {
   most_recent = true
   owners      = ["amazon"]
   filter {
@@ -64,13 +64,42 @@ data "aws_ami" "this" {
   }
 }
 
+# Cloudinit - users and pass, SSH keys
+data "template_file" "user_data" {
+  vars = {
+    username           = data.vault_generic_secret.secret.data["awsusername"]
+    userpass           = data.vault_generic_secret.secret.data["awsuserpass"]
+    ssh_public_key     = data.vault_generic_secret.secret.data["awssshpublickey"]
+    rootchgme          = data.vault_generic_secret.secret.data["awsrootpass"]
+  }
+  template = "${file("${path.module}/cloud_init.yaml")}"
+  depends_on = [ data.vault_generic_secret.secret ]
+}
+
+# TODO: remote access to vpc private ips, restrict to my static ip
+
 # Create EC2 instance 
 resource "aws_instance" "aws_ec2_instance1" {
-  ami = data.aws_ami.this.id
+  ami = data.aws_ami.amazonlinux.id
   instance_type = var.my_aws_instance_type
 
+  # nic attached to a subnet 
   network_interface {
     network_interface_id = aws_network_interface.nic1.id
     device_index         = 0
+  }
+
+  # Cloudinit
+  user_data = "${data.template_file.user_data.rendered}"
+
+  #cpu_options {
+  #  core_count       = 2
+  #  threads_per_core = 2
+  #}
+  #monitoring = true
+  #security_groups = 
+
+  tags = {
+    Name = "tf-lab1"
   }
 }

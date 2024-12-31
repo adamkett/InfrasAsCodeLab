@@ -2,6 +2,7 @@
 data "template_file" "user_data" {
   vars = {
     username           = data.vault_generic_secret.secret.data["kvmusername"]
+    userpass           = data.vault_generic_secret.secret.data["kvmuserpass"]
     ssh_public_key     = data.vault_generic_secret.secret.data["kvmsshpublickey"]
     rootchgme          = data.vault_generic_secret.secret.data["kvmrootpass"]
   }
