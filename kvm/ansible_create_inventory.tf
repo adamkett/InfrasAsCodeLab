@@ -5,9 +5,12 @@ resource "local_file" "ansible_inventory_ini" {
 [kmvlabhosts]
 centosStream ansible_host=${libvirt_domain.centosStream.network_interface[0].addresses[0]} ansible_user=${data.vault_generic_secret.secret.data["kvmusername"]} ansible_ssh_private_key_file=labsshprivate.key
 ubuntucloud2404 ansible_host=${libvirt_domain.ubuntucloud2404.network_interface[0].addresses[0]} ansible_user=${data.vault_generic_secret.secret.data["kvmusername"]} ansible_ssh_private_key_file=labsshprivate.key
+debian ansible_host=${libvirt_domain.debian.network_interface[0].addresses[0]} ansible_user=${data.vault_generic_secret.secret.data["kvmusername"]} ansible_ssh_private_key_file=labsshprivate.key
+rocky ansible_host=${libvirt_domain.rockyCloud.network_interface[0].addresses[0]} ansible_user=${data.vault_generic_secret.secret.data["kvmusername"]} ansible_ssh_private_key_file=labsshprivate.key
 EOF
   depends_on = [
     time_sleep.ubuntu_wait_x_seconds,
+    time_sleep.debian_wait_x_seconds,
     time_sleep.centos_wait_x_seconds,
     time_sleep.rocky_wait_x_seconds
     ]
@@ -26,9 +29,18 @@ kmvlabhosts:
       ansible_host: ${libvirt_domain.ubuntucloud2404.network_interface[0].addresses[0]}
       ansible_user: ${data.vault_generic_secret.secret.data["kvmusername"]}
       ansible_ssh_private_key_file: labsshprivate.key
+    debian:
+      ansible_host: ${libvirt_domain.debian.network_interface[0].addresses[0]}
+      ansible_user: ${data.vault_generic_secret.secret.data["kvmusername"]}
+      ansible_ssh_private_key_file: labsshprivate.key
+    rocky:
+      ansible_host: ${libvirt_domain.rockyCloud.network_interface[0].addresses[0]}
+      ansible_user: ${data.vault_generic_secret.secret.data["kvmusername"]}
+      ansible_ssh_private_key_file: labsshprivate.key
 EOF
   depends_on = [
     time_sleep.ubuntu_wait_x_seconds,
+    time_sleep.debian_wait_x_seconds,
     time_sleep.centos_wait_x_seconds,
     time_sleep.rocky_wait_x_seconds
     ]
