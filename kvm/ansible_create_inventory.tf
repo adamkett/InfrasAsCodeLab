@@ -57,7 +57,11 @@ resource "null_resource" "output_to_terraform_ansible_log" {
     command = "echo '# ansible ping' >> terraform_ansible.log"
   }
   provisioner "local-exec" {
-    command = "ansible kmvlabhosts -m ping -i ${path.module}/inventory.ini --ssh-common-args='-o StrictHostKeyChecking=accept-new' >> terraform_ansible.log"
+    # This is a local trusted network,
+    # option should be '-o StrictHostKeyChecking=accept-new'
+    # but in the lab have repeatedly reusing IPs for different VMs
+    # when create/destroy VMs a lot, caused known hosts to flag and end process 
+    command = "ansible kmvlabhosts -m ping -i ${path.module}/inventory.ini --ssh-common-args='-o StrictHostKeyChecking=no' >> terraform_ansible.log"
   }
   provisioner "local-exec" {
     command = "echo '# ansible-playbook -i inventory.yaml playbook.yaml' >> terraform_ansible.log"
@@ -71,5 +75,3 @@ resource "null_resource" "output_to_terraform_ansible_log" {
 
   depends_on = [local_file.ansible_inventory_ini]
 }  
-
-# TODO: update accept-new to also update old keys when using a previous IP in known hosts 

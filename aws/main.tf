@@ -5,7 +5,18 @@ provider "aws" {
   secret_key = data.vault_generic_secret.secret.data["awssecretkey"]
 }
 
-# Setup VPC
+variable "my_aws_instance_type" {
+  type = string
+  default = "t2.micro"
+  description = "The instance type for the new ec2 instance"
+
+  validation {
+    condition = contains(["t2.micro", "t2.nano"], var.my_aws_instance_type)
+    error_message = "The instance type must be either t2.micro or t2.nano"
+  }
+}
+
+# Define Virtual Private Cloud 
 resource "aws_vpc" "aws_vpc_lab1" {
   cidr_block = "10.1.0.0/16"
 
@@ -56,7 +67,7 @@ data "aws_ami" "this" {
 # Create EC2 instance 
 resource "aws_instance" "aws_ec2_instance1" {
   ami = data.aws_ami.this.id
-  instance_type = "t2.micro"
+  instance_type = var.my_aws_instance_type
 
   network_interface {
     network_interface_id = aws_network_interface.nic1.id

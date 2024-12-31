@@ -45,7 +45,8 @@ Lab code
   - [ ] nginx site & web site code from git on vms
   - [ ] load balancer across VMs website
   - [ ] Created zoned network example with kvm vms basic
-   [ ] Monitoring basic
+  - [ ] Monitoring basic
+  - [ ] Investigate https://ansible-lockdown.readthedocs.io/en/latest/
 - Docker
   - [X] DOCKER examples basic
 - AWS
