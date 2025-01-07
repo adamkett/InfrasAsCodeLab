@@ -51,3 +51,9 @@
       ansible.builtin.dnf:
         name: nginx
         state: latest
+
+    - name: Ensure nginx is running
+      become: true
+      service:
+        name: nginx
+        state: started
