@@ -4,6 +4,7 @@ Some quick sample files used for terraform & ansible from my home lab.
 
 More being added as and when find some time.
 
+
 ## Examples
 
 Terraform/Ansible examples arranged under folders
@@ -13,7 +14,20 @@ Terraform/Ansible examples arranged under folders
 - [kvm/](kvm/) - terraform setup VMs via KVM with Ansible
 - [docker/](docker/)
 
-Noting lab assumes vault has been 'terraform apply' first to populate values needed for other examples.
+lab examples assumes vault has been populated
+
+## Setup on a linux host that has terraform, ansible and powershell
+
+> git clone https://github.com/adamkett/InfrasAsCodeLab \
+> cd InfrasAsCodeLab/vault \
+
+Create initial values save to ENV.* files to populate vault 
+> ./CreateInitialENVFilesToPopulateVault.ps1
+
+Setup vault and populate from ENV.* files
+> terraform plan \
+> terraform apply 
+
 
 ## Assumptions
 
