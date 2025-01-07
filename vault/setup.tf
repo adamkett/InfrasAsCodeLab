@@ -68,6 +68,10 @@ resource "vault_generic_secret" "secretsforaws" {
       awsrootpass= fileexists("ENV.labpass") ? file("ENV.labpass") : random_password.password_user.result
       awssshpublickey = file("ENV.labsshpubkey")
       awssshprivatekey = file("ENV.labsshprivatekey")
+
+      # file format
+      # X.X.X.X/32,Y.Y.Y.Y/32,Z.Z.Z.Z/32
+      awsIPs_AllowedAccess_SSH = fileexists("ENV.IPs_AllowedAccess_SSH") ? file("ENV.IPs_AllowedAccess_SSH") : ""
     }
   )
   depends_on = [ vault_mount.kvLab ]

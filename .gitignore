@@ -9,3 +9,4 @@ inventory.ini
 *.key
 *.log
 inventory.yaml
+*.code-workspace

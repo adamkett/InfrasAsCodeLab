@@ -1,0 +1,53 @@
+# ansible-playbook -i ./inventory.yaml ./playbook.yaml
+# Note: cloud init enabled default user to sudo,
+#   needs review if better option like fetching from vault 
+- name: AWS Lab 1 - playbook
+  hosts: awslabhosts
+  become: false
+  tasks:
+
+    # - name: Wait for system to become reachable
+    #  wait_for_connection:
+
+    - name: Ping my hosts
+      ansible.builtin.ping:
+
+    - name: Print message
+      ansible.builtin.debug:
+        msg: Hello world 
+
+    - name: Ensure all packages are up to date
+      become: true
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+
+    - name: Ensure specified default packages are installed
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+          - vim
+          - unzip
+          - htop
+          - atop
+          - iftop
+          - sysstat
+          - iotop
+    - name: Ensure specified packages are not installed
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: absent
+      vars:
+        packages:
+          - nano
+  
+    # AWS Lab 1 - setup Nginx 
+    - name: Ensure nginx is installed at the latest version
+      become: true
+      ansible.builtin.dnf:
+        name: nginx
+        state: latest
