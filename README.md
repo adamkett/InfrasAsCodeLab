@@ -22,7 +22,9 @@ lab examples assumes vault has been populated
 > cd InfrasAsCodeLab/vault \
 
 Create initial values save to ENV.* files to populate vault 
-> ./CreateInitialENVFilesToPopulateVault.ps1
+> pwsh ./CreateInitialENVFilesToPopulateVault.ps1
+or
+> bash ./CreateInitialENVFilesToPopulateVault.sh
 
 Setup vault and populate from ENV.* files
 > terraform plan \
