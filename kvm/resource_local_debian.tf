@@ -6,7 +6,8 @@ resource "libvirt_volume" "debian-img" {
   name = "debian.img"
   pool = "default"
   #source = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2"
-  source = "/storage/isos/debian-12-generic-amd64.qcow2"
+  #source = "/storage/isos/debian-12-generic-amd64.qcow2"
+  source = "/storage/isos/debian-12-genericcloud-amd64.qcow2"
   format = "qcow2"
   depends_on = [ libvirt_cloudinit_disk.commoninit ]
 }
@@ -16,7 +17,7 @@ resource "libvirt_volume" "debian-img" {
 #
 resource "libvirt_domain" "debian" {
   name   = "debian"
-  memory = "2048"
+  memory = "3072"
   vcpu   = 2
 
   network_interface {

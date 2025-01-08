@@ -17,7 +17,7 @@ resource "libvirt_volume" "rockyCloud-qcow2" {
 #
 resource "libvirt_domain" "rockyCloud" {
   name   = "rockyCloud"
-  memory = "2048"
+  memory = "3072"
   vcpu   = 2
 
   cpu {

@@ -16,7 +16,7 @@ resource "libvirt_volume" "ubuntucloud2404-img" {
 #
 resource "libvirt_domain" "ubuntucloud2404" {
   name   = "ubuntucloud2404"
-  memory = "2048"
+  memory = "3072"
   vcpu   = 2
 
   network_interface {

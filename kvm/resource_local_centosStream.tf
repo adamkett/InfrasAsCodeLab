@@ -17,7 +17,7 @@ resource "libvirt_volume" "centosStream-qcow2" {
 #
 resource "libvirt_domain" "centosStream" {
   name   = "centosStream"
-  memory = "2048"
+  memory = "3072"
   vcpu   = 2
 
   cpu {

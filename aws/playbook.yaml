@@ -1,6 +1,10 @@
+# code: language=yaml
+#
 # ansible-playbook -i ./inventory.yaml ./playbook.yaml
+#
 # Note: cloud init enabled default user to sudo,
 #   needs review if better option like fetching from vault 
+#
 - name: AWS Lab 1 - playbook
   hosts: awslabhosts
   become: false

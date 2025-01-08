@@ -1,12 +1,94 @@
-# ansible-playbook -i inventory.yaml playbook.yaml
-- name: My first play
+# code: language=yaml
+# ansible-lint ./playbook.yaml 
+# ansible-playbook -i ./inventory.yaml ./playbook.yaml
+
+- name: KVM Lab1 playbook
   hosts: kmvlabhosts
+  vars:
+    packages_install_common:
+      - vim
+      - git
+      - iotop
+      - sysstat
+      - iftop
+      - htop
+    packages_install_debian:
+      - btop
+    packages_install_rhel:
+      - btop
+    packages_remove_common:
+      - nano
   tasks:
-   - name: Ping my hosts
-     ansible.builtin.ping:
+    - name: Ping my hosts
+      ansible.builtin.ping:
 
-   - name: Print message
-     ansible.builtin.debug:
-       msg: Hello world
+    - name: Print message
+      ansible.builtin.debug:
+        msg: Hello world
 
-# TODO: install nginx
+    # Redhat derived/based VMs in Lab
+    - name: Ensure all packages are up to date on Redhat family based servers
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        update_cache: yes
+        name: "*"
+        state: latest
+    - name: Enable EPEL
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        name: "epel-release"
+        state: present
+    - name: Ensure specified default packages are installed on Redhat family based servers
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ packages_install_common }}"
+        state: present
+    - name: Ensure specified RHEL packages are installed on Redhat family based servers
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ packages_install_rhel }}"
+        state: present
+    - name: Ensure specified packages are not installed
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ packages_remove_common }}"
+        state: absent
+
+    # Debian derived/based VMs in Lab
+    - name: Ensure all packages are up to date on Debian family based servers
+      when: ansible_os_family == 'Debian'
+      become: true
+      ansible.builtin.apt:
+        update_cache: yes
+        name: "*"
+        state: latest
+    - name: Ensure specified default packages are installed on Debian family based servers
+      when: ansible_os_family == 'Debian'
+      become: true
+      ansible.builtin.apt:
+        name: "{{ packages_install_common }}"
+        state: present
+    - name: Ensure specified Debian packages are installed on Debian family based servers
+      when: ansible_os_family == 'Debian'
+      become: true
+      ansible.builtin.apt:
+        name: "{{ packages_install_debian }}"
+        state: present
+    - name: Ensure specified packages are not installed
+      when: ansible_os_family == 'Debian'
+      become: true
+      ansible.builtin.apt:
+        name: "{{ packages_remove_common }}"
+        state: absent
+
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html
+# - name: Read-write git checkout from github
+#  ansible.builtin.git:
+#    repo: git@github.com:mylogin/hello.git
+#    dest: /home/mylogin/hello
