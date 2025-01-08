@@ -4,6 +4,7 @@
 
 - name: KVM Lab1 playbook
   hosts: kmvlabhosts
+
   vars:
     packages_install_common:
       - vim
@@ -12,12 +13,14 @@
       - sysstat
       - iftop
       - htop
+      - unzip
     packages_install_debian:
       - btop
     packages_install_rhel:
       - btop
     packages_remove_common:
       - nano
+
   tasks:
     - name: Ping my hosts
       ansible.builtin.ping:
@@ -26,7 +29,7 @@
       ansible.builtin.debug:
         msg: Hello world
 
-    # Redhat derived/based VMs in Lab
+    # Redhat derived/based VMs in Lab - base updates
     - name: Ensure all packages are up to date on Redhat family based servers
       when: ansible_os_family == 'RedHat'
       become: true
@@ -34,32 +37,15 @@
         update_cache: yes
         name: "*"
         state: latest
+
     - name: Enable EPEL
       when: ansible_os_family == 'RedHat'
       become: true
       ansible.builtin.dnf:
         name: "epel-release"
         state: present
-    - name: Ensure specified default packages are installed on Redhat family based servers
-      when: ansible_os_family == 'RedHat'
-      become: true
-      ansible.builtin.dnf:
-        name: "{{ packages_install_common }}"
-        state: present
-    - name: Ensure specified RHEL packages are installed on Redhat family based servers
-      when: ansible_os_family == 'RedHat'
-      become: true
-      ansible.builtin.dnf:
-        name: "{{ packages_install_rhel }}"
-        state: present
-    - name: Ensure specified packages are not installed
-      when: ansible_os_family == 'RedHat'
-      become: true
-      ansible.builtin.dnf:
-        name: "{{ packages_remove_common }}"
-        state: absent
 
-    # Debian derived/based VMs in Lab
+    # Debian derived/based VMs in Lab - base updates
     - name: Ensure all packages are up to date on Debian family based servers
       when: ansible_os_family == 'Debian'
       become: true
@@ -67,18 +53,60 @@
         update_cache: yes
         name: "*"
         state: latest
+
     - name: Ensure specified default packages are installed on Debian family based servers
       when: ansible_os_family == 'Debian'
       become: true
       ansible.builtin.apt:
         name: "{{ packages_install_common }}"
         state: present
+
+    # reboot for kernel updates
+    - name: Check if a reboot is needed on all servers
+      register: reboot_required_file
+      stat: path=/var/run/reboot-required get_md5=no
+
+    - name: Reboot the box if kernel updated
+      become: true
+      reboot:
+        msg: "Reboot initiated by Ansible for kernel updates"
+        connect_timeout: 5
+        reboot_timeout: 90
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists
+
+    # Redhat derived/based VMs in Lab - install packages
+    - name: Ensure specified default packages are installed on Redhat family based servers
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ packages_install_common }}"
+        state: present
+
+    - name: Ensure specified RHEL packages are installed on Redhat family based servers
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ packages_install_rhel }}"
+        state: present
+
+    - name: Ensure specified packages are not installed
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ packages_remove_common }}"
+        state: absent
+
+    # Debian derived/based VMs in Lab - install packages
     - name: Ensure specified Debian packages are installed on Debian family based servers
       when: ansible_os_family == 'Debian'
       become: true
       ansible.builtin.apt:
         name: "{{ packages_install_debian }}"
         state: present
+
     - name: Ensure specified packages are not installed
       when: ansible_os_family == 'Debian'
       become: true
@@ -86,9 +114,32 @@
         name: "{{ packages_remove_common }}"
         state: absent
 
+    # KVM Lab 1 - setup Nginx 
+    - name: Ensure nginx is installed at the latest version on RHEL based Hosts
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.dnf:
+        name: nginx
+        state: latest
 
+    - name: Ensure nginx is installed at the latest version on Debian based Hosts
+      when: ansible_os_family == 'Debian'
+      become: true
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+
+    - name: Ensure nginx is running
+      become: true
+      service:
+        name: nginx
+        state: started
+
+# TODO: git fetch website code 
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html
 # - name: Read-write git checkout from github
 #  ansible.builtin.git:
 #    repo: git@github.com:mylogin/hello.git
 #    dest: /home/mylogin/hello
+# TODO: GITHUB URL & USERNAME should be vault variables, RO creds
+# TODO: Cloud init using yaml encoded per device + HOSTNAME in cloudinit ?
