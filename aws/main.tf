@@ -214,7 +214,6 @@ resource "null_resource" "aws_ec2_instance1_check_connect" {
       user = data.vault_generic_secret.secret.data["awsusername"]
       private_key = data.vault_generic_secret.secret.data["awssshprivatekey"]
     }
-
     inline = ["echo 'connected!'"]
   }
   depends_on = [
