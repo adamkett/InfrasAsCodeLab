@@ -7,7 +7,7 @@ Some quick sample files used for terraform & ansible from my home lab.  Will add
 
 Terraform/Ansible examples arranged under folders
 
-- [vault-inital-populate/](vault-inital-populate/)
+- [vault-initial-populate/](vault-initial-populate/)
   - Initial populate vault secrets
   - Required for other examples to work
   - helper pwsh/bash scripts
