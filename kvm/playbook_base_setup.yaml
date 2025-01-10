@@ -1,9 +1,9 @@
 # code: language=yaml
-# ansible-lint ./playbook.yaml 
-# ansible-playbook -i ./inventory.yaml ./playbook.yaml
+# ansible-lint ./playbook_base_setup.yaml 
+# ansible-playbook -i ./inventory.yaml ./playbook_base_setup.yaml
 
-- name: KVM Lab1 playbook
-  hosts: kmvlabhosts
+- name: KVM Lab1 playbook base setup VMs
+  hosts: all
 
   vars:
     packages_install_common:
@@ -88,26 +88,4 @@
         name: "{{ packages_remove_common }}"
         state: absent
 
-    # KVM Lab 1 - setup Nginx 
-
-    - name: Ensure nginx is installed at the latest version on RHEL based Hosts
-      become: true
-      ansible.builtin.package:
-        name: nginx
-        state: latest
-
-    - name: Ensure nginx is running
-      become: true
-      service:
-        name: nginx
-        state: started
-
-# TODO: git fetch website code 
-# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html
-# - name: Read-write git checkout from github
-#  ansible.builtin.git:
-#    repo: git@github.com:mylogin/hello.git
-#    dest: /home/mylogin/hello
-# TODO: GITHUB URL & USERNAME should be vault variables, RO creds
-# TODO: Cloud init using yaml encoded per device + HOSTNAME in cloudinit ?
-
+#    TODO: Cloud init using yaml encoded per device + HOSTNAME 

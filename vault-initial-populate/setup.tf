@@ -49,6 +49,7 @@ resource "vault_generic_secret" "secretsforkvm" {
       kvmrootpass= fileexists("ENV.labpass") ? file("ENV.labpass") : random_password.password_user.result
       kvmsshpublickey = file("ENV.labsshpubkey")
       kvmsshprivatekey = file("ENV.labsshprivatekey")
+      githubPATwww = file("ENV.githubPATwww")
     }
   )
   depends_on = [ vault_mount.kvLab ]
@@ -72,6 +73,8 @@ resource "vault_generic_secret" "secretsforaws" {
       # file format
       # X.X.X.X/32,Y.Y.Y.Y/32,Z.Z.Z.Z/32
       awsIPs_AllowedAccess_SSH = fileexists("ENV.IPs_AllowedAccess_SSH") ? file("ENV.IPs_AllowedAccess_SSH") : ""
+
+      githubPATwww = file("ENV.githubPATwww")
     }
   )
   depends_on = [ vault_mount.kvLab ]

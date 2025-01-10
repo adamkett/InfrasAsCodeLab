@@ -1,81 +1,71 @@
 # Infrastructure as Code (IaC) lab
 
-Some quick sample files used for terraform & ansible from my home lab.
-
-More being added as and when find some time.
+Some quick sample files used for terraform & ansible from my home lab.  Will add more as & when time I have time.
 
 
 ## Examples
 
 Terraform/Ansible examples arranged under folders
 
-- [vault/](vault/) - Setup vault secrets required for other examples
-- [aws/](aws/) - Create EC2 instance with Ansible configured in a new VPC
-- [kvm/](kvm/) - terraform setup VMs via KVM with Ansible
+- [vault-inital-populate/](vault-inital-populate/)
+  - Initial populate vault secrets
+  - Required for other examples to work
+  - helper pwsh/bash scripts
+- [aws/](aws/)
+  - Terraform Create
+    - new VPC, subnet, IGW in specified region
+    - Create EC2 instances
+      - cloud init
+      - allow access from known IP (aws security group)
+  - Ansible configure EC2 instances
+  - TODO: SSL Certs
+  - TODO: AWS App LoadBalancer & DNS
+  - TODO: Dynamic secret from vault
+- [kvm/](kvm/)
+  - Terraform setup VMs via KVM with Ansible
+    - cloud init
+    - RHEL based
+    - Debian based
+  - Ansible configure instances
+    - install base software / configuration
+    - 1x VMs haproxy as loadbalancer t0 nginx vms
+    - 4x VMs nginx content
+      - GIT pull content
+      - add host ID in page
+  - TODO: SSL Letsencrypt
 - [docker/](docker/)
+  - Terraform create basic docker instances on remote host
+- TODO: Cloudflare DNS/LB/WAF/CDN
+- TODO: Add monitoring
+- TODO: review ansible-lockdown
+- TODO: hyperv windows server 2022 (if nested virt works)
+- TODO: Azure Examples
 
-lab examples assumes vault has been populated
-
-## Setup on a linux host that has terraform, ansible and powershell
-
-> git clone https://github.com/adamkett/InfrasAsCodeLab \
-> cd InfrasAsCodeLab/vault \
-
-Create initial values save to ENV.* files to populate vault 
-> pwsh ./CreateInitialENVFilesToPopulateVault.ps1
-
-or
-
-> bash ./CreateInitialENVFilesToPopulateVault.sh
-
-Setup vault and populate from ENV.* files
-> terraform plan \
-> terraform apply 
-
-
-## Assumptions
-
-My lab setup
+## My Lab Setup
 
 - optimus
-  - RHEL9.5 server (CIS lvl2 profile from install)
+  - RHEL9.5 server
+    - CIS lvl2 profile from install
+    - Spec to support amount of VMs e.g. 64gb ram / 13th gen i5 CPU
   - terraform
+    - setup via Hashicorp guides
   - vault
+    - Setup as https://127.0.0.1:8200
+    - Assumed
+      - user running terraform/ansible has performed vault login
+      - user has performed initial vault populate
   - ansible
   - kvm
+    - Networks
+      - Natted network access via default network
+      - local LAN via bridge0
   - podman
+  - ssh
+    - Every so often, clear out junk entries in known hosts
 - mycroft
   - Ubuntu 24.04 LTS server
   - docker
   - kvm
-- git / github / ssh access setup at user lab user
-- terraform & vault setup via Hashicorp guides
-- Trying to run everything with least privileges as possible.
-- visual code with remote ssh folder & syntax checking.
-
-## TODOs
-Lab code
-- VAULT
-  - [X] Setup Lab Vault and use for terraform secrets
-- KVM
-  - [X] KVM - basic VMs setup
-  - [X] ansible setup on new VMs created by KVM
-  - [ ] nginx site & web site code from git on vms
-  - [ ] load balancer across VMs website
-  - [ ] Created zoned network example with kvm vms basic
-  - [ ] Monitoring basic
-  - [ ] Investigate https://ansible-lockdown.readthedocs.io/en/latest/
-- Docker
-  - [X] DOCKER examples basic
-- AWS
-  - [X] AWS - basic examples
-  - [ ] APP LB & WAF to EC2 instances
-- Cloudflare
-  - [ ] Cloudflare examples basic
-  - [ ] WAF/LB to EC2 instances
-- Azure
-  - [ ] Azure examples basic
-- Windows 
-  - [ ] Window Server 2022 Hyper-V examples basic
-- Maybe
-  - [ ] VMWARE  examples basic
+- git / github / ssh / vault access setup as user running lab commands
+- run with least privileges as practical for lab
+- using visual code with remote ssh folder & syntax checking

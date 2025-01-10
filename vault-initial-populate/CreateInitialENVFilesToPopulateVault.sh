@@ -7,6 +7,7 @@ declare -A EnvArray=(
     [ENV.IPs_AllowedAccess_SSH]="IPs allowed to connect to SSH in format of X.X.X.X/32,Y.Y.Y.Y/32,Z.Z.Z.Z/32"
     [ENV.labsshpubkey]="SSH Public key"
     [ENV.labsshprivatekey]="SSH Private key"
+    [ENV.githubPATwww]="GitHub Repo URL with PAT Token Readonly"
     )
 
 echo "***********************************************************************"
