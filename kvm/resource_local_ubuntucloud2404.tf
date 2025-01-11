@@ -1,3 +1,8 @@
+#locals {
+#  something = thing
+#  depends_on = [ data.vault_generic_secret.secret ]
+#}
+
 #######################################################################
 # Defining local VM Volumes 
 # - download ISO/IMG/qcow2 locally so don't need to keep downloading
@@ -48,12 +53,19 @@ resource "libvirt_domain" "ubuntucloud2404_instance1" {
     network_name = "default"
     wait_for_lease = true
   }
+
+  # TODO: bridge interface not working correctly on optimus lab box
+  #
+  # On server "brctl show" can see the bridge with a new tap for that vm
+  # like the other working bridged vm but that was a manual setup so may differ
+  #
   # Note: /etc/qemu-kvm/bridge.conf needs line "allow bridge0"
-  # network_interface {
-  #   bridge = "bridge0"
-  #   hostname = "ubuntucloud2404_instance1"
-  #   wait_for_lease = true
-  #}
+  network_interface {
+     bridge = "bridge0"
+     #hostname = local.hostname
+     #wait_for_lease = true
+     #network_id = libvirt_network.network_id
+  }
 
   disk {
     volume_id = "${libvirt_volume.ubuntucloud2404_instance1_volume.id}"
@@ -107,7 +119,6 @@ resource "libvirt_domain" "ubuntucloud2404_instance2" {
   depends_on = [ libvirt_volume.ubuntucloud2404_instance2_volume ]
 }
 
-
 # work around for slow boot kvm vms getting ups
 resource "time_sleep" "ubuntu_wait_x_seconds" {
   depends_on = [ libvirt_domain.ubuntucloud2404_instance1, libvirt_domain.ubuntucloud2404_instance2 ]
@@ -123,4 +134,3 @@ output "ip_ubuntucloud2404_instance2" {
   value = libvirt_domain.ubuntucloud2404_instance2.network_interface[0].addresses[0]
   depends_on = [ time_sleep.ubuntu_wait_x_seconds ]
 }
-

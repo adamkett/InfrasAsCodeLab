@@ -14,6 +14,7 @@
       - iftop
       - htop
       - unzip
+      - qemu-guest-agent
     packages_install_debian:
       - btop
     packages_install_rhel:
@@ -28,6 +29,11 @@
     - name: Print message
       ansible.builtin.debug:
         msg: Hello world
+
+    - name: Set a hostname 
+      become: true
+      ansible.builtin.hostname: 
+        name: "{{ new_hostname }}"
 
     # Update packages on new VMs and install base packages
 
@@ -88,4 +94,12 @@
         name: "{{ packages_remove_common }}"
         state: absent
 
-#    TODO: Cloud init using yaml encoded per device + HOSTNAME 
+    - name: Reboot all VMs prove reboot safe
+      become: true
+      reboot:
+        msg: "Reboot initiated by Ansible for final reboot safe check"
+        connect_timeout: 5
+        reboot_timeout: 90
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime

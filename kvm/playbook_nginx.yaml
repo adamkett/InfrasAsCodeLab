@@ -101,11 +101,41 @@
 
 # TODO: ubuntu instance 1 = HAProxy, all other VMs NGINX content servers 
 # instance 2 smaller disk and diff ansible group 
-
+# 
 # TODO: link the folders to new git repos or update the configs  
 # TODO: SSL Lets encrypt
 # TODO: HAProxy to the VMs - with deadhost and a variable to ident host
-
-# TODO: add vault-populate/readme.md -- notes from above about vault login 
+# 
 # TODO: Generate per host random password and save back to VAULT? 
-# TODO: Cloud init - could try the custom YAML encode on ubunut host -- set hostname 
+# 
+# examples ref folder nginx changes needed - note ansible validate 
+#   "sed  -i '/PermitRootLogin/s/.*/PermitRootLogin yes/' /etc/ssh/sshd_config",
+#      "systemctl restart sshd"
+# 
+#    # Get rid of default ubuntu user
+#    # https://askubuntu.com/questions/1461894/cloud-init-always-adding-ubuntu-user
+#    - name: Remove the user 'ubuntu'
+#      when: ansible_os_family == 'Debian'
+#      become: true
+#      ansible.builtin.user:
+#        name: ubuntu
+#        state: absent
+#        remove: yes #delete dirs
+#
+#    - name: Remove sudo access for deleted 'ubnt' user
+#      when: ansible_os_family == 'Debian'
+#      become: true
+#      ansible.builtin.lineinfile:
+#        path: /etc/sudoers.d/90-cloud-init-users
+#        state: absent
+#        search_string: 'ubuntu ALL=(ALL) NOPASSWD:ALL'
+#        validate: 'visudo -cf %s'
+#
+#    - name: Remove left over config for deleted 'ubnt' user
+#      when: ansible_os_family == 'Debian'
+#      become: true
+#      ansible.builtin.lineinfile:
+#        path: /etc/sudoers.d/90-cloud-init-users
+#        state: absent
+#        search_string: '# User rules for ubuntu'
+#        validate: 'visudo -cf %s'
