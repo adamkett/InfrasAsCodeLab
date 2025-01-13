@@ -69,8 +69,15 @@ resource "libvirt_domain" "ubuntucloud2404_instance1" {
   # manual virt-xml vmname --edit --network bridge=bridge0
   network_interface {
      bridge = "bridge0"
+
+     hostname = "lab-haproxy01"
+
+     # Give VM the same MAC address 
+     # Will get ip each time and resolves to
+     # lab-haproxy01.home.arpa ref SSL cert tasks
+     mac = "52:54:00:7e:5a:d3"
+
      wait_for_lease = true
-     hostname = "ubuntucloud2404-instance1-bridge"
   }
 
   qemu_agent = true

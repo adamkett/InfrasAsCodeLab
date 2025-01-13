@@ -2,6 +2,14 @@
 # ansible-lint ./playbook_haproxy_inc_ssl_and_iptables.yaml
 # ansible-playbook -i ./inventory.yaml ./playbook_haproxy_inc_ssl_and_iptables.yaml
 
+#######################################################################
+# needed for building haproxy config
+- hosts: all
+  tasks:
+    - name: Gather facts
+      setup:
+
+#######################################################################
 - name: KVM Lab1 playbook haproxy, ssl and firewall rules
   hosts: kmvlabhosts_haproxy
 
@@ -94,11 +102,23 @@
 
     #######################################################################
     # Setup haproxy 
+    - name: "install haproxy"
+      become: yes
+      package:
+        name: haproxy
+        state: present
 
-    # TODO: install haproxy
-    # TODO: configure haproxy to load balance to other vms on private vlan 
-    # TODO: SSL lets encrypt
-  
+    # configure haproxy to load balance to other vms on private vlan 
+    - name: "configure haproxy.cfg file"
+      become: yes
+      template:
+        src: "haproxy.cfg.j2"
+        dest: "/etc/haproxy/haproxy.cfg"
 
+    - name: Restart haproxy
+      become: yes
+      service:
+        name: haproxy
+        state: restarted
 
-
+    # TODO: Setup SSL 

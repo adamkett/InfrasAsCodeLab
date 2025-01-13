@@ -8,7 +8,7 @@ kmvlabhosts_haproxy:
       ansible_host: ${libvirt_domain.ubuntucloud2404_instance1.network_interface[0].addresses[0]}
       ansible_user: ${data.vault_generic_secret.secret.data["kvmusername"]}
       ansible_ssh_private_key_file: labsshprivate.key
-      new_hostname: ubuntucloud2404-instance1
+      new_hostname: lab-haproxy01
 kmvlabhosts_nginx:
   hosts:
     centosStream:
