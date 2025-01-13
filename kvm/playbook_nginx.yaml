@@ -73,6 +73,7 @@
         owner: www-ansible
         group: www-data
 
+    # only accessible if user running ansible play is logged into vault
     - name: Read-write git checkout from github
       become: true
       ansible.builtin.git:

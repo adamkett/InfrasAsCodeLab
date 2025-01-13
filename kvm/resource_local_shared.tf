@@ -12,11 +12,19 @@ data "template_file" "user_data" {
   depends_on = [ data.vault_generic_secret.secret ]
 }
 
+data "template_file" "network_data" {
+  vars = {
+  }
+  template = "${file("${path.module}/cloud_init_network.cfg")}"
+  depends_on = [ data.vault_generic_secret.secret ]
+}
+
 # Use CloudInit to add the instance
 resource "libvirt_cloudinit_disk" "commoninit" {
   name = "commoninit.iso"
   pool = "default" # List storage pools using virsh pool-list
   user_data = "${data.template_file.user_data.rendered}"
+  network_config = "${data.template_file.network_data.rendered}"
   depends_on = [ data.vault_generic_secret.secret ]
 }
 

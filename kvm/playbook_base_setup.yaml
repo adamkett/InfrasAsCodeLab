@@ -14,6 +14,7 @@
       - iftop
       - htop
       - unzip
+      - net-tools
       - qemu-guest-agent
     packages_install_debian:
       - btop
@@ -103,3 +104,22 @@
         pre_reboot_delay: 0
         post_reboot_delay: 30
         test_command: uptime
+
+    # install and update locate 
+    - name: Install mlocate for Rocky
+      when: ansible_facts['distribution'] == 'Rocky'
+      become: true
+      ansible.builtin.package:
+        name: "mlocate"
+        state: present
+
+    - name: Install plocate for none Rocky
+      when: ansible_facts['distribution'] != 'Rocky'
+      become: true
+      ansible.builtin.package:
+        name: "plocate"
+        state: present
+
+    - name: Update locate database
+      become: true
+      command: updatedb

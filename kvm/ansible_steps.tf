@@ -77,6 +77,13 @@ resource "null_resource" "output_to_terraform_ansible_log" {
   }
 
   provisioner "local-exec" {
+    command = "echo '# ansible-playbook -i inventory.yaml playbook_haproxy_inc_ssl_and_iptables.yaml' >> terraform_ansible.log"
+  }
+  provisioner "local-exec" {
+    command = "ansible-playbook -i ${path.module}/inventory.yaml playbook_haproxy_inc_ssl_and_iptables.yaml >> terraform_ansible.log"
+  }
+
+  provisioner "local-exec" {
     command = "cat terraform_ansible.log"
   }
 

@@ -1,3 +1,7 @@
+#######################################################################
+# instance 1 will be the haproxy server 
+# instance 2 will be another nginx hosting content 
+#
 #locals {
 #  something = thing
 #  depends_on = [ data.vault_generic_secret.secret ]
@@ -18,8 +22,13 @@ resource "libvirt_volume" "ubuntucloud2404-img" {
 
 #######################################################################
 # local create VM resized disks
-# instance 1 will be the haproxy server 
-# instance 2 will be another nginx hosting content 
+#
+# https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs/resources/volume
+# when provisioning multiple domains using the same base image, create a
+# libvirt_volume for the base image and then define the domain specific
+# ones as based on it. This way the image will not be modified and no
+# extra disk space is going to be used for the base image.
+#
 resource "libvirt_volume" "ubuntucloud2404_instance1_volume" {
   name           = "ubuntucloud2404_instance1_volume"
   pool           = "default"
@@ -36,36 +45,35 @@ resource "libvirt_volume" "ubuntucloud2404_instance2_volume" {
   depends_on     = [ libvirt_volume.ubuntucloud2404-img ]
 }
 
-# https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs/resources/volume
-# when provisioning multiple domains using the same base image, create a
-# libvirt_volume for the base image and then define the domain specific
-# ones as based on it. This way the image will not be modified and no
-# extra disk space is going to be used for the base image.
-
-# TODO: instance 1 onto bridged network -- vm can talk to both networks
-
+#######################################################################
+# Instance 1, haproxy
 resource "libvirt_domain" "ubuntucloud2404_instance1" {
   name   = "ubuntucloud2404_instance1"
   memory = "3072"
   vcpu   = 2
 
+  # network interface on vms network
   network_interface {
     network_name = "default"
     wait_for_lease = true
+    hostname = "ubuntucloud2404-instance1"
   }
 
-  # TODO: bridge interface not working correctly on optimus lab box
-  #
+  # Network interface on general lan for use with HA proxy
+  # 
   # On server "brctl show" can see the bridge with a new tap for that vm
   # like the other working bridged vm but that was a manual setup so may differ
   #
-  # Note: /etc/qemu-kvm/bridge.conf needs line "allow bridge0"
+  # kvm host /etc/qemu-kvm/bridge.conf needs line "allow bridge0"
+  # vm config /etc/netplan/50-cloud-init.yaml
+  # manual virt-xml vmname --edit --network bridge=bridge0
   network_interface {
      bridge = "bridge0"
-     #hostname = local.hostname
-     #wait_for_lease = true
-     #network_id = libvirt_network.network_id
+     wait_for_lease = true
+     hostname = "ubuntucloud2404-instance1-bridge"
   }
+
+  qemu_agent = true
 
   disk {
     volume_id = "${libvirt_volume.ubuntucloud2404_instance1_volume.id}"
@@ -88,6 +96,8 @@ resource "libvirt_domain" "ubuntucloud2404_instance1" {
   depends_on = [ libvirt_volume.ubuntucloud2404_instance1_volume ]
 }
 
+#######################################################################
+# Instance 2, nginx www content
 resource "libvirt_domain" "ubuntucloud2404_instance2" {
   name   = "ubuntucloud2404_instance2"
   memory = "3072"
@@ -119,17 +129,25 @@ resource "libvirt_domain" "ubuntucloud2404_instance2" {
   depends_on = [ libvirt_volume.ubuntucloud2404_instance2_volume ]
 }
 
+#######################################################################
 # work around for slow boot kvm vms getting ups
 resource "time_sleep" "ubuntu_wait_x_seconds" {
   depends_on = [ libvirt_domain.ubuntucloud2404_instance1, libvirt_domain.ubuntucloud2404_instance2 ]
   create_duration = "5s"
 }
 
+#######################################################################
 output "ip_ubuntucloud2404_instance1" {
   value = libvirt_domain.ubuntucloud2404_instance1.network_interface[0].addresses[0]
   depends_on = [ time_sleep.ubuntu_wait_x_seconds ]
 }
 
+output "ip_ubuntucloud2404_instance1_bridge" {
+  value = libvirt_domain.ubuntucloud2404_instance1.network_interface[1].addresses[0]
+  depends_on = [ time_sleep.ubuntu_wait_x_seconds ]
+}
+
+#######################################################################
 output "ip_ubuntucloud2404_instance2" {
   value = libvirt_domain.ubuntucloud2404_instance2.network_interface[0].addresses[0]
   depends_on = [ time_sleep.ubuntu_wait_x_seconds ]

@@ -1,0 +1,104 @@
+# code: language=yaml
+# ansible-lint ./playbook_haproxy_inc_ssl_and_iptables.yaml
+# ansible-playbook -i ./inventory.yaml ./playbook_haproxy_inc_ssl_and_iptables.yaml
+
+- name: KVM Lab1 playbook haproxy, ssl and firewall rules
+  hosts: kmvlabhosts_haproxy
+
+  vars:
+
+  tasks:
+
+    #######################################################################
+    # Setup firewall rules 
+
+    # iptables -A INPUT -i lo -j ACCEPT
+    - name: Allow loopback interface INPUT e.g for resolver 
+      become: yes
+      ansible.builtin.iptables:
+        chain: INPUT
+        in_interface: lo
+        jump: ACCEPT
+        comment: Allow Loopback interface INPUT
+
+    # Outbound traffic not currently restricted
+    # iptables -A OUTPUT -o lo -j ACCEPT
+    #- name: Allow loopback interface OUTPUT
+    #  become: yes
+    #  ansible.builtin.iptables:
+    #    chain: OUTPUT
+    #    out_interface: lo
+    #    jump: ACCEPT
+    #    comment: Allow Loopback interface OUTPUT
+
+    # iptables -t filter -A INPUT -m conntrack -j ACCEPT --ctstate ESTABLISHED,RELATED
+    - name: Allow related and established connections
+      become: yes
+      ansible.builtin.iptables:
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+        comment: Allow related and established connections
+
+    - name: Allow new incoming SYN packets on TCP port 22 (SSH) on private lan (not bridged interface)
+      become: yes
+      ansible.builtin.iptables:
+        chain: INPUT
+        in_interface: ens3
+        protocol: tcp
+        destination_port: 22
+        ctstate: NEW
+        syn: match
+        jump: ACCEPT
+        comment: Allow new incoming SYN packets on TCP port 22 (SSH) on private lan (not bridged interface)
+
+    - name: Allow Incoming http/https
+      become: yes
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_ports:
+          - "80"
+          - "443"
+        comment: Allow Incoming http/https
+        jump: ACCEPT
+
+    - name: Set the policy for the INPUT chain to DROP
+      become: yes
+      ansible.builtin.iptables:
+        chain: INPUT
+        policy: DROP
+        comment: Default Drop INPUT
+
+    - name: Reject tcp with tcp-reset
+      become: yes
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        reject_with: tcp-reset
+        ip_version: ipv4
+
+    #- name: Set tcp flags
+    #  become: yes
+    #  ansible.builtin.iptables:
+    #    chain: OUTPUT
+    #    jump: DROP
+    #    protocol: tcp
+    #    tcp_flags:
+    #      flags: ALL
+    #      flags_set:
+    #        - ACK
+    #        - RST
+    #        - SYN
+    #        - FIN
+
+    #######################################################################
+    # Setup haproxy 
+
+    # TODO: install haproxy
+    # TODO: configure haproxy to load balance to other vms on private vlan 
+    # TODO: SSL lets encrypt
+  
+
+
+
