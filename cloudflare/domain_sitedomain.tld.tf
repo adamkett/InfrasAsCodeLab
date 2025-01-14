@@ -8,6 +8,7 @@
 #
 # Vault: Secrets needed in vault - see vault setup of
 #      cf_api_token, cf_account_id, cf_zone_id, cf_domain
+# User running terraform/ansible commands is logged into vault
 #
 # Onboarding existing domain to Terraform: if domain has been managed via dashboard, need
 # to get current configuration into terraform cf-terraforming generate (create code)
