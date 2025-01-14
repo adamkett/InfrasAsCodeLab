@@ -114,6 +114,7 @@
       template:
         src: "haproxy.cfg.j2"
         dest: "/etc/haproxy/haproxy.cfg"
+        validate: 'haproxy -c -f %s'
 
     - name: Restart haproxy
       become: yes

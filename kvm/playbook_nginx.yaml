@@ -1,16 +1,6 @@
 # code: language=yaml
 # ansible-lint ./playbook_nginx.yaml 
 # ansible-playbook -i ./inventory.yaml ./playbook_nginx.yaml
-#
-# Folder note cross distros 
-#
-# debian/ubuntu, default port 80,
-#   /var/www/html
-#
-# centosstream/rocky, default port 80,
-#   /usr/share/nginx/html
-#   And load from /etc/nginx/default.d/*.conf
-#     includes example for TLS server 
 
 - name: KVM Lab1 playbook NGINX on Vms
   hosts: kmvlabhosts_nginx
@@ -73,6 +63,13 @@
         owner: www-ansible
         group: www-data
 
+    # added due to replaying ansible workbooks, should not be needed under normal use
+    - name: Clear website folder if already exists
+      become: true
+      ansible.builtin.file:
+        path: /storage/www
+        state: absent
+
     # only accessible if user running ansible play is logged into vault
     - name: Read-write git checkout from github
       become: true
@@ -100,15 +97,45 @@
         group: nginx
         recurse: true
 
-# TODO: ubuntu instance 1 = HAProxy, all other VMs NGINX content servers 
-# instance 2 smaller disk and diff ansible group 
-# 
-# TODO: link the folders to new git repos or update the configs  
-# TODO: SSL Lets encrypt
-# TODO: HAProxy to the VMs - with deadhost and a variable to ident host
-# 
-# TODO: Generate per host random password and save back to VAULT? 
-# 
+    # centosstream/rocky, default port 80,
+    #   /usr/share/nginx/html
+    #   And load from /etc/nginx/default.d/*.conf
+    #     includes example for TLS server 
+    - name: Nginx update folder path to new location [RHEL]
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '^\s*root\s+/usr/share/nginx/html;$'
+        line: "        root         /storage/www/kvmdemo1/;"
+        #validate: 'nginx -t -c %s'
+
+    # debian/ubuntu, default port 80,
+    #   /var/www/html
+    - name: Nginx update folder path to new location [DEBIAN]
+      when: ansible_os_family == 'Debian'
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/nginx/sites-available/default
+        regexp: '^\s*root\s+/var/www/html;$'
+        line: "        root /storage/www/kvmdemo1/;"
+        #validate: 'nginx -t -c %s'
+
+    - name: Add Hostname in HTML for demo
+      become: true
+      ansible.builtin.lineinfile:
+        path: /storage/www/kvmdemo1/index.html
+        regexp: '<p>This is #HOST</p>'
+        line: '    <p>This is {{ new_hostname }}</p>'
+
+    - name: Restart nginx
+      become: yes
+      service:
+        name: nginx 
+        state: restarted        
+
+
+
 # examples ref folder nginx changes needed - note ansible validate 
 #   "sed  -i '/PermitRootLogin/s/.*/PermitRootLogin yes/' /etc/ssh/sshd_config",
 #      "systemctl restart sshd"

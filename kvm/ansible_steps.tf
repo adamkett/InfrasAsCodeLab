@@ -4,7 +4,7 @@ resource "local_file" "ansible_inventory_yaml" {
   content  = <<EOF
 kmvlabhosts_haproxy:
   hosts:
-    ubuntucloud2404_instance1:
+    lab-haproxy01:
       ansible_host: ${libvirt_domain.ubuntucloud2404_instance1.network_interface[0].addresses[0]}
       ansible_user: ${data.vault_generic_secret.secret.data["kvmusername"]}
       ansible_ssh_private_key_file: labsshprivate.key
