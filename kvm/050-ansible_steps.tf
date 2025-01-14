@@ -47,14 +47,11 @@ resource "null_resource" "output_to_terraform_ansible_log" {
     command = "ansible-inventory -i ${path.module}/inventory.yaml --list >> terraform_ansible.log"
   }
 
-  # This is a local trusted network so using '-o StrictHostKeyChecking=accept-new'
-  # avoid issue in the lab have repeatedly reusing IPs for different VMs
-  # when create/destroy VMs a lot, caused known hosts to flag and end process 
   provisioner "local-exec" {
     command = "echo '# ansible ping' >> terraform_ansible.log"
   }
   provisioner "local-exec" {
-    command = "ansible all -m ping -i ${path.module}/inventory.yaml --ssh-common-args='-o StrictHostKeyChecking=no' >> terraform_ansible.log"
+    command = "ansible all -m ping -i ${path.module}/inventory.yaml >> terraform_ansible.log"
   }
 
   provisioner "local-exec" {
