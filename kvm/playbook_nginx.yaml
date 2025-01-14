@@ -97,6 +97,16 @@
         group: nginx
         recurse: true
 
+    # chcon -R -t httpd_sys_content_t /storage
+    - name: SELinux Allow nginx to modify files - Redhat
+      when: ansible_os_family == 'RedHat'
+      become: true
+      community.general.sefcontext:
+        target: '/storage(/.*)?'
+        setype: httpd_sys_rw_content_t
+        state: present
+
+
     # centosstream/rocky, default port 80,
     #   /usr/share/nginx/html
     #   And load from /etc/nginx/default.d/*.conf
