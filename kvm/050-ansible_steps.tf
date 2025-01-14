@@ -37,6 +37,14 @@ EOF
     ]
 }
 
+# work around for slow boot kvm vms getting ups
+# ansible stage intermitent fail 
+# todo: change this to ssh check available 
+resource "time_sleep" "before_ansible_wait_x_seconds" {
+  depends_on = [local_file.ansible_inventory_yaml]
+  create_duration = "5s"
+}
+
 # Run playbook 
 resource "null_resource" "output_to_terraform_ansible_log" {
 
@@ -44,40 +52,40 @@ resource "null_resource" "output_to_terraform_ansible_log" {
     command = "echo '# ansible-inventory' > terraform_ansible.log"
   }
   provisioner "local-exec" {
-    command = "ansible-inventory -i ${path.module}/inventory.yaml --list >> terraform_ansible.log"
+    command = "ansible-inventory -i inventory.yaml --list >> terraform_ansible.log"
   }
 
   provisioner "local-exec" {
     command = "echo '# ansible ping' >> terraform_ansible.log"
   }
   provisioner "local-exec" {
-    command = "ansible all -m ping -i ${path.module}/inventory.yaml >> terraform_ansible.log"
+    command = "ansible all -m ping -i inventory.yaml >> terraform_ansible.log"
   }
 
   provisioner "local-exec" {
     command = "echo '# ansible-playbook -i inventory.yaml playbook_base_setup.yaml' >> terraform_ansible.log"
   }
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${path.module}/inventory.yaml playbook_base_setup.yaml >> terraform_ansible.log"
+    command = "ansible-playbook -i inventory.yaml playbook_base_setup.yaml >> terraform_ansible.log"
   }
 
   provisioner "local-exec" {
     command = "echo '# ansible-playbook -i inventory.yaml playbook_nginx.yaml' >> terraform_ansible.log"
   }
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${path.module}/inventory.yaml playbook_nginx.yaml >> terraform_ansible.log"
+    command = "ansible-playbook -i inventory.yaml playbook_nginx.yaml >> terraform_ansible.log"
   }
 
   provisioner "local-exec" {
     command = "echo '# ansible-playbook -i inventory.yaml playbook_haproxy_inc_ssl_and_iptables.yaml' >> terraform_ansible.log"
   }
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${path.module}/inventory.yaml playbook_haproxy_inc_ssl_and_iptables.yaml >> terraform_ansible.log"
+    command = "ansible-playbook -i inventory.yaml playbook_haproxy_inc_ssl_and_iptables.yaml >> terraform_ansible.log"
   }
 
   provisioner "local-exec" {
     command = "cat terraform_ansible.log"
   }
 
-  depends_on = [local_file.ansible_inventory_yaml]
+  depends_on = [time_sleep.before_ansible_wait_x_seconds]
 }  
