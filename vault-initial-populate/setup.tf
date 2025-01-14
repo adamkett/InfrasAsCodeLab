@@ -1,14 +1,8 @@
 # Initial 1 time setup of Vault value for lab
 # source values from ENV* files as config
 #
-# ENV.awsaccesskey        needed
-# ENV.awssecretkey        needed
-# ENV.awsregion           optional
-# ENV.awsavailabilityzone optional
-# ENV.labuser             optional 
-# ENV.labpass             optional 
-# ENV.labsshpubkey        needed
-# ENV.labsshprivatekey    needed
+# See helper CreateInitialENVFilesToPopulateVault.sh/ps1
+# to generate initial ENV.*
 #
 # TODO: Auto generate SSH Key if none supplied 
 #
@@ -73,6 +67,25 @@ resource "vault_generic_secret" "secretsforaws" {
       # file format
       # X.X.X.X/32,Y.Y.Y.Y/32,Z.Z.Z.Z/32
       awsIPs_AllowedAccess_SSH = fileexists("ENV.IPs_AllowedAccess_SSH") ? file("ENV.IPs_AllowedAccess_SSH") : ""
+
+      githubPATwww = file("ENV.githubPATwww")
+    }
+  )
+  depends_on = [ vault_mount.kvLab ]
+}
+
+resource "vault_generic_secret" "secretsforcloudflare" {
+  path      = "${vault_mount.kvLab.path}/cloudflare"
+  data_json = jsonencode(
+    {
+      cf_api_token  = file("ENV.cf_api_token")
+      cf_account_id = file("ENV.cf_account_id")
+      cf_zone_id    = file("ENV.cf_zone_id")
+      cf_domain     = file("ENV.cf_domain")
+
+      # file format
+      # X.X.X.X/32,Y.Y.Y.Y/32,Z.Z.Z.Z/32
+      cfIPs_AllowedAccess_SSH = fileexists("ENV.IPs_AllowedAccess_SSH") ? file("ENV.IPs_AllowedAccess_SSH") : ""
 
       githubPATwww = file("ENV.githubPATwww")
     }

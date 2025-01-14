@@ -4,11 +4,17 @@ $EnvArray = @{}
 $EnvArray.add( "ENV.awsregion", "AWS Region e.g. eu-west-2" )
 $EnvArray.add( "ENV.awsaccesskey", "AWS Access Key" )
 $EnvArray.add( "ENV.awssecretkey", "AWS Secret Key" )
-$EnvArray.add( "ENV.IPs_AllowedAccess_SSH", "IPs allowed to connect to SSH in format of X.X.X.X/32,Y.Y.Y.Y/32,Z.Z.Z.Z/32" )
+
 $EnvArray.add( "ENV.labsshpubkey", "SSH Public key" )
 $EnvArray.add( "ENV.labsshprivatekey", "SSH Private key" )
+
+$EnvArray.add( "ENV.IPs_AllowedAccess_SSH", "IPs allowed to connect to SSH in format of X.X.X.X/32,Y.Y.Y.Y/32,Z.Z.Z.Z/32" )
 $EnvArray.add( "ENV.githubPATwww", "GitHub Repo URL with PAT Token Readonly" )
 
+$EnvArray.add( "ENV.cf_api_token", "cloudflare API Token" )
+$EnvArray.add( "ENV.cf_acccount_id", "cloudflare Account ID" )
+$EnvArray.add( "ENV.cf_zone_id", "cloudflare zone ID" )
+$EnvArray.add( "ENV.cf_domain", "cloudflare domain" )
 
 
 Write-Output "***********************************************************************"

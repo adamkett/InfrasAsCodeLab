@@ -11,6 +11,12 @@ Terraform/Ansible examples arranged under folders
   - Initial populate vault secrets
   - Required for other examples to work
   - helper pwsh/bash scripts
+- [cloudflare/](cloudflare/)
+  - Terraform manage Domain in cloudflare 
+  - DNS
+  - Page Rule, redirect
+  - TODO: setup LB
+  - TODO: setup Worker static HTML from gitrepo
 - [aws/](aws/)
   - Terraform Create
     - new VPC, subnet, IGW in specified region

@@ -8,6 +8,10 @@ declare -A EnvArray=(
     [ENV.labsshpubkey]="SSH Public key"
     [ENV.labsshprivatekey]="SSH Private key"
     [ENV.githubPATwww]="GitHub Repo URL with PAT Token Readonly"
+    [ENV.cf_api_token]="cloudflare API Token"
+    [ENV.cf_acccount_id]="cloudflare Account ID"
+    [ENV.cf_zone_id]="cloudflare zone ID"
+    [ENV.cf_domain]="cloudflare domain"
     )
 
 echo "***********************************************************************"
