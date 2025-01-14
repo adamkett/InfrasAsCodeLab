@@ -50,7 +50,7 @@ resource "libvirt_volume" "ubuntucloud2404_instance2_volume" {
 resource "libvirt_domain" "ubuntucloud2404_instance1" {
   name   = "ubuntucloud2404_instance1"
   memory = "3072"
-  vcpu   = 2
+  vcpu   = 4
 
   # network interface on vms network
   network_interface {
@@ -108,7 +108,7 @@ resource "libvirt_domain" "ubuntucloud2404_instance1" {
 resource "libvirt_domain" "ubuntucloud2404_instance2" {
   name   = "ubuntucloud2404_instance2"
   memory = "3072"
-  vcpu   = 2
+  vcpu   = 4
 
   network_interface {
     network_name = "default"

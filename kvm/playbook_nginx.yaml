@@ -70,6 +70,12 @@
         path: /storage/www
         state: absent
 
+    # chcon -R -t httpd_sys_content_t /storage
+    - name: Apply new SELinux file context to filesystem - Redhat
+      when: ansible_os_family == 'RedHat'
+      become: true
+      ansible.builtin.command: chcon -R -t httpd_sys_rw_content_t /storage
+
     # only accessible if user running ansible play is logged into vault
     - name: Read-write git checkout from github
       become: true
@@ -96,16 +102,6 @@
         owner: www-ansible
         group: nginx
         recurse: true
-
-    # chcon -R -t httpd_sys_content_t /storage
-    - name: SELinux Allow nginx to modify files - Redhat
-      when: ansible_os_family == 'RedHat'
-      become: true
-      community.general.sefcontext:
-        target: '/storage(/.*)?'
-        setype: httpd_sys_rw_content_t
-        state: present
-
 
     # centosstream/rocky, default port 80,
     #   /usr/share/nginx/html

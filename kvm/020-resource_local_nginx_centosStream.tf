@@ -18,7 +18,7 @@ resource "libvirt_volume" "centosStream-qcow2" {
 resource "libvirt_domain" "centosStream" {
   name   = "centosStream"
   memory = "3072"
-  vcpu   = 2
+  vcpu   = 4
 
   cpu {
     mode = "host-passthrough"

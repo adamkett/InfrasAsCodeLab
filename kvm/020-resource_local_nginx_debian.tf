@@ -25,7 +25,7 @@ resource "libvirt_volume" "debian_instance1_volume" {
 resource "libvirt_domain" "debian" {
   name   = "debian"
   memory = "3072"
-  vcpu   = 2
+  vcpu   = 4
 
   network_interface {
     network_name = "default"

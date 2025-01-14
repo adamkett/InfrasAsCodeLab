@@ -18,7 +18,7 @@ resource "libvirt_volume" "rockyCloud-qcow2" {
 resource "libvirt_domain" "rockyCloud" {
   name   = "rockyCloud"
   memory = "3072"
-  vcpu   = 2
+  vcpu   = 4
 
   cpu {
     mode = "host-passthrough"
