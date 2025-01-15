@@ -1,0 +1,7 @@
+{% for inventory_name in groups['kmvlabhosts_workers'] %}
+  define host {
+    use linux-server
+    host_name {{ inventory_name }}
+    address {{ hostvars[inventory_name].ansible_default_ipv4.address }}
+  }
+{% endfor %}

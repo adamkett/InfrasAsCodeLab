@@ -1,0 +1,64 @@
+# code: language=yaml
+# ansible-lint ./053-playbook_nagios_server.yaml
+# ansible-playbook -i ./inventory.yaml ./053-playbook_nagios_server.yaml
+
+#######################################################################
+# Gather facts all to allow building configs using other hosts ips
+- hosts: all
+  tasks:
+    - name: Gather facts
+      setup:
+
+#######################################################################
+- name: KVM Lab1 playbook setup nagios server
+  hosts: kmvlabhosts_nagios
+  
+  vars:
+
+  tasks:
+
+    #######################################################################
+    # Install 
+    - name: Install nagios server 
+      become: true
+      ansible.builtin.package:
+        name: nagios4-core, nagios4-cgi, nagios-plugins, nagios-nrpe-plugin, apache2
+        state: present
+
+    #######################################################################
+    # Check Nagios call call NRPE
+    # TODO: Change to foreach loop workers group inventory 
+    - name: Check NRPE lab-worker01
+      ansible.builtin.shell: /usr/lib/nagios/plugins/check_nrpe -H lab-worker01
+      register: resultNRPEW1
+
+    - name: Print return Check NRPE lab-worker01
+      debug:
+        msg: "Check NRPE :: {{ resultNRPEW1.stdout }}"
+
+    #######################################################################
+    # Configure
+
+    - name: Enable Apache Module CGI
+      become: true
+      ansible.builtin.shell: a2enmod cgi
+
+    - name: Restart Apache server
+      become: yes
+      service:
+        name: apache2
+        state: restarted
+
+    # configure nagios worker hosts
+    - name: "configure /etc/nagios4/conf.d/host_lab-workers.cfg file"
+      become: yes
+      template:
+        src: "054-template-host_lab-workers.cfg.j2"
+        dest: "/etc/nagios4/conf.d/host_lab-workers.cfg"
+        #validate: 'nagios -v %s' 
+    
+    - name: Restart nagios server
+      become: yes
+      service:
+        name: nagios4
+        state: restarted

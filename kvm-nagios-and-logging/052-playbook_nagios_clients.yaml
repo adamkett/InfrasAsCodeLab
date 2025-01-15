@@ -1,0 +1,43 @@
+# code: language=yaml
+# ansible-lint ./052-playbook_nagios_clients.yaml
+# ansible-playbook -i ./inventory.yaml ./052-playbook_nagios_clients.yaml
+
+#######################################################################
+# Gather facts for all hosts to allow building Nagois NRPE ip
+- hosts: all
+  tasks:
+    - name: Gather facts
+      setup:
+
+#######################################################################
+- name: KVM Lab1 playbook for workers in nagios example 
+  hosts: kmvlabhosts_workers
+
+  vars:
+
+  tasks:
+
+    #######################################################################
+    # Install 
+    - name: Install nagios client 
+      become: true
+      ansible.builtin.package:
+        name: nagios-nrpe-plugin, nagios-plugins, nagios-nrpe-server
+        state: present
+
+    #######################################################################
+    # Configure
+
+    - name: Ensure nrpe allows requests from Nagios01
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/nagios/nrpe_local.cfg
+        regexp: '^allowed hosts='
+        line: "allowed_hosts={{ hostvars['lab-nagios01'].ansible_default_ipv4.address }}"
+
+    # sudo systemctl restart nagios-nrpe-server.service
+    - name: Restart nagios-nrpe-server
+      become: yes
+      service:
+        name: nagios-nrpe-server
+        state: restarted

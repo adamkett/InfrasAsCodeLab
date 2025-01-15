@@ -1,8 +1,12 @@
-Back to [README.md](README.md)
+# Notes on lab libvirt setup
 
-## others notes to tidy 
+TODO: Tidy these notes 
+
+Optimus 
+  - Lab server running KVM running RHEL
 
 Mycroft 
+  - second server running ubuntu + kvm 
   - terraform access for lab user using ssh keys
   - usermod -aG kvm,libvirt,qemu adam
 
@@ -27,7 +31,6 @@ User session
 > \[adam@optimus kvm\]$ virsh list --all\
 >  Id   Name                   State\
 > \------------------------------ \
-> \-    SecurityOnion          shut off\
 > \-    Windows11              shut off\
 > \-    WindowsServer2022VM1   shut off
 
@@ -45,28 +48,21 @@ after
 > terraform plan \
 > terraform apply 
 
-Can see leased ips in cockpit or 
+Can see leased ips in RHEL lab server's cockpit or 
 > sudo virsh net-dhcp-leases default 
+
+They are also present in the inventory file 
+
+so you can login to the new vms 
+
+>[adam@optimus kvm]$ ssh defaultlabuser@192.168.122.81 -i labsshprivate.key
+
+>Welcome to Ubuntu 24.04.1 LTS (GNU/Linux 6.8.0-49-generic x86_64)\
+> --snip-- \
+> defaultlabuser@ubuntu1:~$
 
 Clean up
 > terraform destroy
-
-added cloud config 
-
-# ubuntu cloud 
-
-> [adam@optimus kvm]$ sudo virsh net-dhcp-leases default
-
-Find the ip for the vm
-
->[adam@optimus kvm]$ ssh -i ~/.ssh/id_ed25519_kvmadam kvmadam@192.168.122.81 
-
-Logs in ok
-
->Welcome to Ubuntu 24.04.1 LTS (GNU/Linux 6.8.0-49-generic x86_64)
->
---snip--
-> kvmadam@ubuntu:~$
 
 # ansible notes
 

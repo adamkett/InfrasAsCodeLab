@@ -1,0 +1,111 @@
+
+# code: language=yaml
+# ansible-lint ./051-playbook_base_setup.yaml 
+# ansible-playbook -i ./inventory.yaml ./051-playbook_base_setup.yaml
+
+- name: KVM Lab1 playbook base setup VMs for Nagios example
+  hosts: all
+
+  vars:
+    packages_install_common:
+      - vim
+      - git
+      - iotop
+      - sysstat
+      - iftop
+      - htop
+      - unzip
+      - net-tools
+      - qemu-guest-agent
+    packages_install_debian:
+      - btop
+    packages_install_rhel:
+      - btop
+    packages_remove_common:
+      - nano
+
+  tasks:
+    - name: Ping my hosts
+      ansible.builtin.ping:
+
+    - name: Set a hostname 
+      become: true
+      ansible.builtin.hostname: 
+        name: "{{ new_hostname }}"
+
+    # Update packages on new VMs and install base packages
+
+    - name: Update all packages to their latest version
+      become: true
+      ansible.builtin.package:
+        update_cache: yes
+        name: "*"
+        state: latest
+
+    - name: Check if a reboot is needed
+      register: reboot_required_file
+      stat: path=/var/run/reboot-required get_md5=no
+
+    - name: Reboot the box if kernel updated on lab Virtual Machines
+      become: true
+      reboot:
+        msg: "Reboot initiated by Ansible for kernel updates"
+        connect_timeout: 5
+        reboot_timeout: 90
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists
+
+    - name: Install our common packages
+      become: true
+      ansible.builtin.package:
+        update_cache: yes
+        name: "{{ packages_install_common }}"
+        state: present
+
+    - name: Debian family based servers, install packages 
+      when: ansible_os_family == 'Debian'
+      become: true
+      ansible.builtin.apt:
+        name: "{{ packages_install_debian }}"
+        state: present
+
+    - name: Remove specified packages
+      become: true
+      ansible.builtin.package:
+        update_cache: yes
+        name: "{{ packages_remove_common }}"
+        state: absent
+
+    - name: Reboot all VMs prove reboot safe
+      become: true
+      reboot:
+        msg: "Reboot initiated by Ansible for final reboot safe check"
+        connect_timeout: 5
+        reboot_timeout: 30
+        pre_reboot_delay: 0
+        post_reboot_delay: 10
+        test_command: uptime
+
+    - name: Install plocate 
+      when: ansible_os_family == 'Debian'
+      become: true
+      ansible.builtin.package:
+        name: "plocate"
+        state: present
+
+    - name: Update locate database
+      become: true
+      command: updatedb
+
+    #########################################################
+    # Build local hosts file for lab machines as no DNS
+    - name: "Build hosts file"
+      become: true
+      ansible.builtin.lineinfile:
+        dest: /etc/hosts
+        regexp: '.*{{ item }}$'
+        line: "{{ hostvars[item].ansible_host}} {{item}}"
+        state: present
+      with_items: "{{ groups['all'] }}"
