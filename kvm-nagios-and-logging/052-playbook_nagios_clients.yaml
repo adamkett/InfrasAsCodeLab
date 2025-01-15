@@ -35,6 +35,20 @@
         regexp: '^allowed hosts='
         line: "allowed_hosts={{ hostvars['lab-nagios01'].ansible_default_ipv4.address }}"
 
+    - name: NRPE Nagios Check disk vda1
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/nagios/nrpe_local.cfg
+        regexp: '^command[check_vda1]'
+        line: "command[check_vda1]=/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /dev/vda1"
+
+    - name: NRPE Nagios Check SSH on ip
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/nagios/nrpe_local.cfg
+        regexp: '^command[check_ssh]'
+        line: "command[check_ssh]=/usr/lib/nagios/plugins/check_ssh {{ hostvars['lab-nagios01'].ansible_default_ipv4.address }}"
+
     # sudo systemctl restart nagios-nrpe-server.service
     - name: Restart nagios-nrpe-server
       become: yes

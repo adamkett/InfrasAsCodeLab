@@ -1,7 +1,79 @@
+###############################################################################
+# lab-workers.cfg simple checks for nagios 
+
+###############################################################################
+# HOST DEFINITION
 {% for inventory_name in groups['kmvlabhosts_workers'] %}
   define host {
     use linux-server
     host_name {{ inventory_name }}
     address {{ hostvars[inventory_name].ansible_default_ipv4.address }}
   }
+{% endfor %}
+
+
+###############################################################################
+# HOST GROUP DEFINITION
+#
+#define hostgroup {
+#    hostgroup_name          lab-workers                ; The name of the hostgroup
+#    alias                   Linux Lab Worker Servers   ; Long name of the group
+#    members                 localhost                  ; Comma separated list of hosts that belong to this group
+#}
+
+{% for inventory_name in groups['kmvlabhosts_workers'] %}
+
+###############################################################################
+# SERVICE DEFINITIONS for {{ inventory_name }}
+
+define service {
+    use                     local-service           ; Name of service template to use
+    host_name               {{ inventory_name }}
+    service_description     PING
+    check_command           check_ping!100.0,20%!500.0,60%
+}
+
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     Root Partition
+    check_command           check_nrpe!check_vda1
+}
+
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     Current Users
+    check_command           check_nrpe!check_users
+}
+
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     Total Processes
+    check_command           check_nrpe!check_zombie_procs
+}
+
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     Zombie Processes
+    check_command           check_nrpe!check_zombie_procs
+}
+
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     Current Load
+    check_command           check_nrpe!check_load
+}
+
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     SSH
+    check_command           check_nrpe!check_ssh
+    notifications_enabled   0
+}
+
 {% endfor %}

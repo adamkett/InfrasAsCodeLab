@@ -55,7 +55,9 @@
       template:
         src: "054-template-host_lab-workers.cfg.j2"
         dest: "/etc/nagios4/conf.d/host_lab-workers.cfg"
-        #validate: 'nagios -v %s' 
+
+    # TODO: enable auth cgi
+    # TODO: set a password for nagios, use vault value
     
     - name: Restart nagios server
       become: yes
