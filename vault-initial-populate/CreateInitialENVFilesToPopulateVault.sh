@@ -19,6 +19,10 @@ echo "Terraform lab examples under other folders use Vault secret values."
 echo ""
 echo "This script creates & populates ENV.xxx files, then can use"
 echo "terraform to populate Vault values using ENV.xxx file contents"
+echo ""
+echo "Due to vault needing rebuilding frequently in labbing"
+echo ""
+echo "Ensure ENV.* are deleted after not needed"
 echo "***********************************************************************"
 
 if ! command -v dialog 2>&1 >/dev/null
@@ -100,6 +104,8 @@ for ENV_File in "${!EnvArray[@]}"; do
     fi
 
   fi
+  
+  chmod 400 ENV.*
 
   #read -n 1 -s -p "Press any key to continue..."
 done
