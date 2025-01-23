@@ -17,6 +17,8 @@
       - unzip
       - net-tools
       - qemu-guest-agent
+      - gnupg
+      - curl
     packages_install_debian:
       - btop
     packages_install_rhel:
@@ -109,3 +111,10 @@
         line: "{{ hostvars[item].ansible_host}} {{item}}"
         state: present
       with_items: "{{ groups['all'] }}"
+
+    #######################################################################
+    # sudo timedatectl set-timezone Etc/UTC - should be default
+    - name: Set timezone to UTC
+      become: yes
+      timezone:
+        name: Etc/UTC

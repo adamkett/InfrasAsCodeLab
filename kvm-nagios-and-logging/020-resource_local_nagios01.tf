@@ -19,7 +19,7 @@ resource "libvirt_volume" "lab_nagios01_volume" {
   name           = "lab_nagios01_volume"
   pool           = "default"
   base_volume_id = "${libvirt_volume.ubuntucloud2404-img.id}"
-  size           = 4294967296 # 4gb in bytes
+  size           = 21474836480 # 20gb in bytes
   depends_on     = [ libvirt_volume.ubuntucloud2404-img ]
 }
 
@@ -29,6 +29,10 @@ resource "libvirt_domain" "lab-nagios01" {
   name   = "lab-nagios01"
   memory = "3072"
   vcpu   = 4
+
+  cpu {
+    mode = "host-passthrough"
+  }
 
   # network interface on VMs network
   network_interface {

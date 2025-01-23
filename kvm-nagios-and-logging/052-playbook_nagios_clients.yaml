@@ -49,6 +49,16 @@
         regexp: '^command[check_ssh]'
         line: "command[check_ssh]=/usr/lib/nagios/plugins/check_ssh {{ hostvars['lab-nagios01'].ansible_default_ipv4.address }}"
 
+    # TODO Add
+    #command[check_yum]=/usr/lib/nagios/plugins/check_yum
+    #command[check_apt]=/usr/lib/nagios/plugins/check_apt
+    #command[check_cpu_stats]=/usr/lib/nagios/plugins/check_cpu_stats.sh $ARG1$
+    #command[check_mem]=/usr/lib/nagios/plugins/custom_check_mem -n $ARG1$
+    # open files
+    # netstat
+    # 
+    # See if nagios graphs
+
     # sudo systemctl restart nagios-nrpe-server.service
     - name: Restart nagios-nrpe-server
       become: yes

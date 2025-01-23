@@ -37,7 +37,7 @@
         msg: "Check NRPE :: {{ resultNRPEW1.stdout }}"
 
     #######################################################################
-    # Configure
+    # Configure Nagios
 
     - name: Enable Apache Module CGI
       become: true
@@ -57,6 +57,7 @@
         dest: "/etc/nagios4/conf.d/host_lab-workers.cfg"
 
     # TODO: enable auth cgi
+
     # TODO: set a password for nagios, use vault value
     
     - name: Restart nagios server
