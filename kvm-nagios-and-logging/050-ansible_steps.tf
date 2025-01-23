@@ -75,13 +75,13 @@ resource "null_resource" "output_to_terraform_ansible_log" {
 
   # TODO: actual nagios checks beyond basic coms / up 
 
-  # Setup Docker on Nagios server
-  provisioner "local-exec" {
-    command = "echo '# ansible-playbook -i inventory.yaml 061-playbook_docker.yaml' >> terraform_ansible.log"
-  }
-  provisioner "local-exec" {
-    command = "ansible-playbook -i inventory.yaml 061-playbook_docker.yaml >> terraform_ansible.log"
-  }
+  ## Setup Docker on Nagios server
+  #provisioner "local-exec" {
+  #  command = "echo '# ansible-playbook -i inventory.yaml 061-playbook_docker.yaml' >> terraform_ansible.log"
+  #}
+  #provisioner "local-exec" {
+  #  command = "ansible-playbook -i inventory.yaml 061-playbook_docker.yaml >> terraform_ansible.log"
+  #}
 
   # TODO: graylog
 
