@@ -90,5 +90,18 @@ resource "vault_generic_secret" "secretsforcloudflare" {
       githubPATwww = file("ENV.githubPATwww")
     }
   )
+
   depends_on = [ vault_mount.kvLab ]
+}
+
+resource "null_resource" "clearupLocalENVfiles" {
+  depends_on = [
+      vault_generic_secret.secretsforaws,
+      vault_generic_secret.secretsforcloudflare,
+      vault_generic_secret.secretsforkvm
+      ]
+  provisioner "local-exec" {
+    #when    = destroy
+    command = "rm ENV.*"
+  }
 }
