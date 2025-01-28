@@ -22,7 +22,7 @@
     - name: Install nagios client 
       become: true
       ansible.builtin.package:
-        name: nagios-nrpe-plugin, nagios-plugins, nagios-nrpe-server
+        name: nagios-nrpe-plugin, nagios-plugins, nagios-nrpe-server, monitoring-plugins-contrib
         state: present
 
     #######################################################################
@@ -49,15 +49,31 @@
         regexp: '^command[check_ssh]'
         line: "command[check_ssh]=/usr/lib/nagios/plugins/check_ssh {{ hostvars['lab-nagios01'].ansible_default_ipv4.address }}"
 
-    # TODO Add
-    #command[check_yum]=/usr/lib/nagios/plugins/check_yum
-    #command[check_apt]=/usr/lib/nagios/plugins/check_apt
-    #command[check_cpu_stats]=/usr/lib/nagios/plugins/check_cpu_stats.sh $ARG1$
-    #command[check_mem]=/usr/lib/nagios/plugins/custom_check_mem -n $ARG1$
+    - name: NRPE Nagios Check APT
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/nagios/nrpe_local.cfg
+        regexp: '^command[check_apt]'
+        line: "command[check_apt]=/usr/lib/nagios/plugins/check_apt"
+
+    - name: NRPE Nagios Check CPU Usage
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/nagios/nrpe_local.cfg
+        regexp: '^command[check_cpu]'
+        line: "command[check_cpu]=/usr/lib/nagios/plugins/check_cpu_stats.sh -w 75% -c 90%"
+
+    - name: NRPE Nagios Check Memory Free
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/nagios/nrpe_local.cfg
+        regexp: '^command[check_memory]'
+        line: "command[check_memory]=/usr/lib/nagios/plugins/check_memory --available --units MiB -w 70%: -c 10%"
+
+    #TODO: 
     # open files
     # netstat
-    # 
-    # See if nagios graphs
+    # if nagios graphs
 
     # sudo systemctl restart nagios-nrpe-server.service
     - name: Restart nagios-nrpe-server

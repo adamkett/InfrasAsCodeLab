@@ -76,4 +76,28 @@ define service {
     notifications_enabled   0
 }
 
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     APT
+    check_command           check_nrpe!check_apt
+    notifications_enabled   0
+}
+
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     CPU
+    check_command           check_nrpe!check_cpu
+    notifications_enabled   0
+}
+
+define service {
+    use                     local-service
+    host_name               {{ inventory_name }}
+    service_description     Memory
+    check_command           check_nrpe!check_memory
+    notifications_enabled   0
+}
+
 {% endfor %}

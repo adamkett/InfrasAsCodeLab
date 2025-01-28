@@ -30,6 +30,7 @@ resource "libvirt_domain" "lab-nagios01" {
   memory = "3072"
   vcpu   = 4
 
+  # Testing docker withing a VM
   cpu {
     mode = "host-passthrough"
   }

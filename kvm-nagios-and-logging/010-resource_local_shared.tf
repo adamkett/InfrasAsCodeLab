@@ -26,7 +26,7 @@ resource "libvirt_cloudinit_disk" "commoninit" {
   pool = "default" # List storage pools using virsh pool-list
   user_data = "${data.template_file.user_data.rendered}"
   network_config = "${data.template_file.network_data.rendered}"
-  depends_on = [ data.vault_generic_secret.secret ]
+  depends_on = [ data.template_file.user_data, data.template_file.network_data ]
 }
 
 # Pull private key from vault - save to local key file
